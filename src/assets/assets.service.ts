@@ -63,4 +63,20 @@ export class AssetsService {
     const res = await this.assetRepository.getMonitoringData();
     return res;
   }
+
+  async getAssetsByDescription(
+    description: string,
+    skip: number,
+    limit: number,
+  ): Promise<any> {
+    console.log(description);
+    const totalCount =
+      await this.assetRepository.getTotalCountGroupedByDescription(description);
+    const assetsDetails = await this.assetRepository.getAssetsByDescription(
+      description,
+      skip,
+      limit,
+    );
+    return { assetsDetails, totalCount };
+  }
 }

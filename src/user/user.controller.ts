@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -17,21 +19,16 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //   @UseGuards(JwtAuthGuard)
-  //   @Post()
-  //   async findUserByEmail(email: string): Promise<any> {
-  //     return this.userService.findUserByEmail(email);
-  //   }
-
   @Post('changePassword')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
+  @HttpCode(HttpStatus.OK)
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    // @Req() req,
+    @Req() req,
   ) {
     await this.userService.changePassword(
-      changePasswordDto.email,
+      req.user.email,
       changePasswordDto.currentPassword,
       changePasswordDto.newPassword,
     );

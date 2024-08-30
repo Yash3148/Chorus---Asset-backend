@@ -109,31 +109,47 @@ export class AssetRepository {
   }
 
   async getMonitoringData(): Promise<any> {
-    return (
-      this.repository
-        .createQueryBuilder('asset')
-        .select('asset.description', 'description')
-        .addSelect('COUNT(asset.id)', 'totalCount')
-        // .addSelect(
-        //   'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END)',
-        //   'egressEventCount',
-        // )
-        // .addSelect(
-        //   'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END)',
-        //   'unableToLocateCount',
-        // )
-        .addSelect(
-          '(COUNT(asset.id) - ' +
-            'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
-            'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))',
-          'monitoringCount',
-        )
-        .groupBy('asset.description')
-        .setParameters({
-          egressStatus: 'Egress',
-          unableToLocateStatus: 'Unable To Locate',
-        })
-        .getRawMany()
-    );
+    return this.repository
+      .createQueryBuilder('asset')
+      .select('asset.description', 'description')
+      .addSelect('COUNT(asset.id)', 'totalCount')
+      .addSelect(
+        '(COUNT(asset.id) - ' +
+          'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
+          'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))',
+        'monitoringCount',
+      )
+      .addSelect(
+        'ROUND(((COUNT(asset.id) - ' +
+          'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
+          'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))::NUMERIC / COUNT(asset.id)) * 100, 2)',
+        'monitoringPercentage',
+      )
+      .groupBy('asset.description')
+      .setParameters({
+        egressStatus: 'Egress',
+        unableToLocateStatus: 'Unable To Locate',
+      })
+      .getRawMany();
+  }
+
+  async getTotalCountGroupedByDescription(description: string): Promise<any> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .where('asset.description = :description', { description })
+      .getCount();
+  }
+
+  async getAssetsByDescription(
+    description: string,
+    skip: number,
+    limit: number,
+  ): Promise<Asset[]> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .where('asset.description = :description', { description })
+      .skip(skip)
+      .take(limit)
+      .getMany();
   }
 }
