@@ -98,13 +98,42 @@ export class AssetRepository {
     return this.repository
       .createQueryBuilder('asset')
       .select('asset.description', 'description')
-      .addSelect('COUNT(asset.id)', 'totalCount')
+      .addSelect('COUNT(asset.id)', 'Total')
       .addSelect(
         'SUM(CASE WHEN asset.status != :status THEN 1 ELSE 0 END)',
-        'availableCount',
+        'Monitoring',
       )
       .groupBy('asset.description')
       .setParameters({ status: 'Unable To Locate' })
       .getRawMany();
+  }
+
+  async getMonitoringData(): Promise<any> {
+    return (
+      this.repository
+        .createQueryBuilder('asset')
+        .select('asset.description', 'description')
+        .addSelect('COUNT(asset.id)', 'totalCount')
+        // .addSelect(
+        //   'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END)',
+        //   'egressEventCount',
+        // )
+        // .addSelect(
+        //   'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END)',
+        //   'unableToLocateCount',
+        // )
+        .addSelect(
+          '(COUNT(asset.id) - ' +
+            'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
+            'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))',
+          'monitoringCount',
+        )
+        .groupBy('asset.description')
+        .setParameters({
+          egressStatus: 'Egress',
+          unableToLocateStatus: 'Unable To Locate',
+        })
+        .getRawMany()
+    );
   }
 }
