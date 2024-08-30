@@ -13,6 +13,7 @@ export class CsvHelperService {
         .pipe(csv())
         .on('data', (row) => {
           const assetData = this.mapRowToAsset(row);
+          console.log(assetData);
           assets.push(assetData);
         })
         .on('end', () => {
@@ -25,10 +26,14 @@ export class CsvHelperService {
   }
 
   private mapRowToAsset(row: any): Partial<Asset> {
+    const zoneId = row['Zone ID'] || null;
+
+    const floor = zoneId ? zoneId.substring(0, 4) : null;
+
     return {
       eventId: row['Event ID'] || null,
       egressEventTime: row['Egress Event Time (MM-DD-YYYY)']
-        ? new Date(row['Egress Event Time'])
+        ? new Date(row['Egress Event Time (MM-DD-YYYY)'])
         : null,
       deviceId: row['Device ID'] || null,
       tagNumber: row['Tag Number'] || null,
@@ -45,8 +50,11 @@ export class CsvHelperService {
       unableToLocate: row['Unable to locate']
         ? row['Unable to locate'].toLowerCase() === 'true'
         : null,
-      zoneId: row['Zone ID'] || null,
+      zoneId: zoneId,
       zoneCategory: row['Zone Category'] || null,
+      floor: floor,
+      department: row['Department'],
+      organizationId: row['Organization Id'],
     };
   }
 }

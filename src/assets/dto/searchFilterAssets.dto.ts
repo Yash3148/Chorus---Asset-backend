@@ -24,3 +24,13 @@ export class SearchFilterAssetsDto {
   @Min(1)
   readonly limit?: number = 10;
 }
+
+export class GroupByFilterDto {
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @IsOptional()
+  @IsString()
+  description: string;
+}
