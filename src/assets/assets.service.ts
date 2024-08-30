@@ -60,7 +60,7 @@ export class AssetsService {
     const { location, description } = groupBy;
     // const total = await this.assetRepository.groupByDescription();
     // const monitored = await this.assetRepository.countNotUnableToLocate();
-    const res = await this.assetRepository.groupByDescriptionWithStatusCount();
+    const res = await this.assetRepository.getMonitoringData();
     return res;
   }
 }
