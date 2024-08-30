@@ -69,5 +69,42 @@ export class AssetRepository {
     return await queryBuilder.getMany();
   }
 
-  async getGroupBy(loc);
+  async groupByLocation(): Promise<any> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .select('asset.lastLocation', 'location')
+      .addSelect('COUNT(asset.id)', 'count')
+      .groupBy('asset.lastLocation')
+      .getRawMany();
+  }
+
+  async groupByDescription(): Promise<any> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .select('asset.description', 'description')
+      .addSelect('COUNT(asset.id)', 'count')
+      .groupBy('asset.description')
+      .getRawMany();
+  }
+
+  async countNotUnableToLocate(): Promise<number> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .where('asset.status != :status', { status: 'Unable to locate' })
+      .getCount();
+  }
+
+  async groupByDescriptionWithStatusCount(): Promise<any> {
+    return this.repository
+      .createQueryBuilder('asset')
+      .select('asset.description', 'description')
+      .addSelect('COUNT(asset.id)', 'totalCount')
+      .addSelect(
+        'SUM(CASE WHEN asset.status != :status THEN 1 ELSE 0 END)',
+        'availableCount',
+      )
+      .groupBy('asset.description')
+      .setParameters({ status: 'Unable To Locate' })
+      .getRawMany();
+  }
 }
