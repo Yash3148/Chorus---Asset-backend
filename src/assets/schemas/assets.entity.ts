@@ -49,4 +49,13 @@ export class Asset {
 
   @Column({ nullable: true })
   zoneCategory: string; // Optional
+
+  @Column({ nullable: true })
+  floor: string; // Optional
+
+  @Column({ nullable: true })
+  department: string; // Optional
+
+  @Column({ nullable: true })
+  organizationId: string; // Optional
 }

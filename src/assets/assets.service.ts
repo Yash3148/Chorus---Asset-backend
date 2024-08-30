@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { AssetRepository } from './repository/asset.repository';
 import { CsvHelperService } from 'src/helpers/csvHelper.service';
 import { Asset } from './schemas/assets.entity';
-import { SearchFilterAssetsDto } from './dto/searchFilterAssets.dto';
+import {
+  GroupByFilterDto,
+  SearchFilterAssetsDto,
+} from './dto/searchFilterAssets.dto';
 
 @Injectable()
 export class AssetsService {
@@ -15,7 +18,7 @@ export class AssetsService {
     return this.assetRepository.createAsset(assetData);
   }
 
-  async findAssetByDeviceId(deviceId: string): Promise<Asset> {
+  async getAssetByDeviceId(deviceId: string): Promise<Asset> {
     return this.assetRepository.findAssetByDeviceId(deviceId);
   }
 
@@ -23,7 +26,7 @@ export class AssetsService {
     const assets = await this.csvHelperService.processCsv(filePath);
     for (const assetData of assets) {
       console.log(assetData);
-      const existingAsset = await this.findAssetByDeviceId(assetData.deviceId);
+      const existingAsset = await this.getAssetByDeviceId(assetData.deviceId);
       if (existingAsset) {
         await this.assetRepository.updateAsset(existingAsset, assetData);
       } else {
@@ -51,5 +54,9 @@ export class AssetsService {
       limit,
     );
     return assetsList;
+  }
+
+  async getGroupBy(groupBy: GroupByFilterDto): Promise<any> {
+    const { location, description } = groupBy;
   }
 }

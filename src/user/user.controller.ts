@@ -24,14 +24,14 @@ export class UserController {
   //   }
 
   @Post('changePassword')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
-    @Req() req,
+    // @Req() req,
   ) {
     await this.userService.changePassword(
-      req.user.email,
+      changePasswordDto.email,
       changePasswordDto.currentPassword,
       changePasswordDto.newPassword,
     );

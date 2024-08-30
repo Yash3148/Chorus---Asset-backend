@@ -1,6 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { AssetsService } from './assets.service';
-import { SearchFilterAssetsDto } from './dto/searchFilterAssets.dto';
+import {
+  GroupByFilterDto,
+  SearchFilterAssetsDto,
+} from './dto/searchFilterAssets.dto';
 import { Asset } from './schemas/assets.entity';
 
 @Controller('assets')
@@ -17,5 +20,15 @@ export class AssetsController {
     @Body() assetsSeachFilterDto: SearchFilterAssetsDto,
   ): Promise<Asset[]> {
     return this.assetsService.getAssets(assetsSeachFilterDto);
+  }
+
+  @Get('/:id')
+  async getAssetByDeviceId(@Param('id') deviceId: string): Promise<Asset> {
+    return this.assetsService.getAssetByDeviceId(deviceId);
+  }
+
+  @Post('/by')
+  async getAssetsBy(@Body() groupBy: GroupByFilterDto): Promise<any> {
+    return this.assetsService.getGroupBy(groupBy);
   }
 }

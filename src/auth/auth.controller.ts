@@ -7,6 +7,8 @@ import {
   UsePipes,
   UseGuards,
   Req,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -22,12 +24,14 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
+  // @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerUser: RegisterUserDto) {
     return this.authService.register(registerUser.email);
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true }))
+  // @HttpCode(HttpStatus.OK)
   async login(@Body() userCred: LoginUserDto) {
     return this.authService.login(userCred.email, userCred.password);
   }

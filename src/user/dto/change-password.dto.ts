@@ -2,6 +2,9 @@
 import { IsNotEmpty, MinLength } from 'class-validator';
 
 export class ChangePasswordDto {
+  @IsNotEmpty()
+  email: string;
+
   @IsNotEmpty({ message: 'Current password is required' })
   currentPassword: string;
 
