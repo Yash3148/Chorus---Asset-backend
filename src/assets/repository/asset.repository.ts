@@ -68,4 +68,6 @@ export class AssetRepository {
 
     return await queryBuilder.getMany();
   }
+
+  async getGroupBy(loc);
 }
