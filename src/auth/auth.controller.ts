@@ -24,19 +24,20 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  // @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerUser: RegisterUserDto) {
     return this.authService.register(registerUser.email);
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  // @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.OK)
   async login(@Body() userCred: LoginUserDto) {
     return this.authService.login(userCred.email, userCred.password);
   }
 
   @Post('forgotPassword')
+  @HttpCode(HttpStatus.OK)
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     const otp = await this.authService.forgetPassword(forgotPasswordDto.email);
@@ -46,6 +47,7 @@ export class AuthController {
 
   @Post('verifyOtp')
   @UsePipes(new ValidationPipe({ transform: true }))
+  @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
     const token = await this.authService.verifyOtp(
       verifyOtpDto.email,
@@ -57,6 +59,7 @@ export class AuthController {
   @Post('resetPassword')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
+  @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Req() req) {
     const resetResponse = await this.authService.resetPassword(
       req.user?.email,
