@@ -58,5 +58,9 @@ export class AssetsService {
 
   async getGroupBy(groupBy: GroupByFilterDto): Promise<any> {
     const { location, description } = groupBy;
+    // const total = await this.assetRepository.groupByDescription();
+    // const monitored = await this.assetRepository.countNotUnableToLocate();
+    const res = await this.assetRepository.groupByDescriptionWithStatusCount();
+    return res;
   }
 }
