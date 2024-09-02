@@ -41,7 +41,7 @@ export class AssetsController {
     return this.assetsService.getAssetByDeviceId(deviceId);
   }
 
-  @Post('/by')
+  @Post('/assetsList')
   @HttpCode(HttpStatus.OK)
   async getAssetsBy(@Body() groupBy: GroupByFilterDto): Promise<any> {
     return this.assetsService.getGroupBy(groupBy);

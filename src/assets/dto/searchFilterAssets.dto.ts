@@ -12,7 +12,7 @@ export class SearchFilterAssetsDto {
 
   @IsOptional()
   @IsString()
-  search?: string;
+  searchQuery?: string;
 
   @IsOptional()
   @IsInt()
