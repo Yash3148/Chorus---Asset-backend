@@ -60,4 +60,9 @@ export class AssetsController {
       Number(limit),
     );
   }
+
+  @Get('/floor/all')
+  async getAllFoor() {
+    return this.assetsService.getAllFloor();
+  }
 }
