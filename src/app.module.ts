@@ -6,7 +6,10 @@ import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AssetsModule } from './assets/assets.module';
+<<<<<<< HEAD
 import { CacheModule } from '@nestjs/cache-manager';
+=======
+>>>>>>> origin/main
 
 @Module({
   imports: [
@@ -26,7 +29,10 @@ import { CacheModule } from '@nestjs/cache-manager';
       synchronize: true,
       entities: [join(__dirname, './**/**.entity{.ts,.js}')],
     }),
+<<<<<<< HEAD
     CacheModule.register({ isGlobal: true }),
+=======
+>>>>>>> origin/main
     UserModule,
     AuthModule,
     AssetsModule,

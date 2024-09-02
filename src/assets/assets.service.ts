@@ -42,14 +42,14 @@ export class AssetsService {
   ): Promise<Asset[]> {
     const {
       filter = {},
-      search = '',
+      searchQuery = '',
       skip = 0,
       limit = 10,
     } = assetsSeachFilterDto;
 
     const assetsList = await this.assetRepository.getAssets(
       filter,
-      search,
+      searchQuery,
       skip,
       limit,
     );
@@ -79,8 +79,11 @@ export class AssetsService {
     );
     return { assetsDetails, totalCount };
   }
+<<<<<<< HEAD
 
   async getAllFloor() {
     return await this.assetRepository.getAllFloor();
   }
+=======
+>>>>>>> origin/main
 }
