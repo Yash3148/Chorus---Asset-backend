@@ -83,4 +83,10 @@ export class AssetsService {
   async getAllFloor() {
     return await this.assetRepository.getAllFloor();
   }
+
+  async getAssetsByFloor(floor: string) {
+    return await this.assetRepository.getAssetCountsByFloorDepartmentAndZone(
+      floor,
+    );
+  }
 }
