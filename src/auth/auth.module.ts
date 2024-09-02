@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserModule } from 'src/user/user.module';
 import { MailerService } from 'src/helpers/mailer.service';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MailerService } from 'src/helpers/mailer.service';
         signOptions: { expiresIn: configService.get('JWT_EXPIRY') },
       }),
     }),
+    CacheModule.register(),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, MailerService],

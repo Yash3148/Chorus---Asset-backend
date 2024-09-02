@@ -6,7 +6,8 @@ export default () => ({
   },
   JWT_SECRET: process.env.JWT_SECRET,
   EMAIL_USER: process.env.EMAIL_USER,
-  EMAIL_PASS: process.env.EMAIL_PASS,
+  // EMAIL_PASS: process.env.EMAIL_PASS,
   FRONTEND_URL: process.env.FRONTEND_URL,
   JWT_EXPIRY: process.env.JWT_EXPIRY,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
 });

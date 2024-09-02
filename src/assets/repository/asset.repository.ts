@@ -152,4 +152,13 @@ export class AssetRepository {
       .take(limit)
       .getMany();
   }
+
+  async getAllFloor() {
+    const distinctFloors = await this.repository
+      .createQueryBuilder('asset')
+      .select('DISTINCT(asset.floor)', 'floor')
+      .getRawMany();
+
+    return distinctFloors;
+  }
 }

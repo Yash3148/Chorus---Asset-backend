@@ -79,4 +79,8 @@ export class AssetsService {
     );
     return { assetsDetails, totalCount };
   }
+
+  async getAllFloor() {
+    return await this.assetRepository.getAllFloor();
+  }
 }
