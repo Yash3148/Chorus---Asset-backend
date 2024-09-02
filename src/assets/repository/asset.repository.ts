@@ -161,16 +161,4 @@ export class AssetRepository {
 
     return distinctFloors;
   }
-
-  async getAssetCountsByFloorDepartmentAndZone(floor: string): Promise<any[]> {
-    return this.repository
-      .createQueryBuilder('asset')
-      .select('asset.department', 'department')
-      .addSelect('asset.zoneId', 'zoneId')
-      .addSelect('COUNT(*)', 'assetCount')
-      .where('asset.floor = :floor', { floor })
-      .groupBy('asset.department')
-      .addGroupBy('asset.zoneId')
-      .getRawMany();
-  }
 }

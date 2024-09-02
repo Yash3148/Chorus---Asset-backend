@@ -18,7 +18,7 @@ import { Asset } from './schemas/assets.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('assets')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -64,12 +64,5 @@ export class AssetsController {
   @Get('/floor/all')
   async getAllFoor() {
     return this.assetsService.getAllFloor();
-  }
-
-  @Get('/floor/:floorNumber')
-  async getAssetsByFloor(
-    @Param('floorNumber') floorNumber: string,
-  ): Promise<any> {
-    return this.assetsService.getAssetsByFloor(floorNumber);
   }
 }
