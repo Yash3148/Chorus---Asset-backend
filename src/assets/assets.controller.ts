@@ -18,7 +18,7 @@ import { Asset } from './schemas/assets.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('assets')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -41,7 +41,7 @@ export class AssetsController {
     return this.assetsService.getAssetByDeviceId(deviceId);
   }
 
-  @Post('/by')
+  @Post('/assetsList')
   @HttpCode(HttpStatus.OK)
   async getAssetsBy(@Body() groupBy: GroupByFilterDto): Promise<any> {
     return this.assetsService.getGroupBy(groupBy);
