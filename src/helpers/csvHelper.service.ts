@@ -28,7 +28,7 @@ export class CsvHelperService {
   private mapRowToAsset(row: any): Partial<Asset> {
     const zoneId = row['Zone ID'] || null;
 
-    const floor = zoneId ? zoneId.substring(2, 4) : null;
+    const floor = zoneId ? zoneId.match(/(?<=FL)\d{2}/)[0] : null;
 
     return {
       eventId: row['Event ID'] || null,
