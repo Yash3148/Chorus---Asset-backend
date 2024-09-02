@@ -79,11 +79,8 @@ export class AssetsService {
     );
     return { assetsDetails, totalCount };
   }
-<<<<<<< HEAD
 
   async getAllFloor() {
     return await this.assetRepository.getAllFloor();
   }
-=======
->>>>>>> origin/main
 }
