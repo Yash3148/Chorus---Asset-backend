@@ -72,4 +72,12 @@ export class AssetsController {
   ): Promise<any> {
     return this.assetsService.getAssetsByFloor(floorNumber);
   }
+
+  @Get('/floor/:floorNumber/:deparment')
+  async getAssetsByDepartment(
+    @Param('floorNumber') floorNumber: string,
+    @Param('department') department: string,
+  ): Promise<any> {
+    return this.assetsService.getAssetByDepartment(floorNumber, department);
+  }
 }

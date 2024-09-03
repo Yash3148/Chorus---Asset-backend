@@ -93,4 +93,14 @@ export class AssetsService {
       floor,
     );
   }
+
+  async getAssetByDepartment(
+    floorNumber: string,
+    department: string,
+  ): Promise<any> {
+    return await this.assetRepository.getMonitoringData(
+      floorNumber,
+      department,
+    );
+  }
 }
