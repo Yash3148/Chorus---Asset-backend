@@ -22,23 +22,32 @@ export class AssetsService {
     return this.assetRepository.findAssetByDeviceId(deviceId);
   }
 
-  async processCsv(filePath: string): Promise<void> {
-    const assets = await this.csvHelperService.processCsv(filePath);
-    for (const assetData of assets) {
-      console.log(assetData);
-      const existingAsset = await this.assetRepository.findAssetToUpdate(
-        assetData.deviceId,
-        assetData.tagNumber,
-        assetData.organizationId,
-      );
-      if (existingAsset) {
-        await this.assetRepository.updateAsset(existingAsset, assetData);
-      } else {
-        await this.assetRepository.createAsset(assetData);
-      }
-    }
+  async processCsv(filePath: string): Promise<any> {
+    try {
+      const assets = await this.csvHelperService.processCsv(filePath);
 
-    console.log('CSV file successfully processed');
+      for (const assetData of assets) {
+        console.log(assetData);
+
+        const existingAsset = await this.assetRepository.findAssetToUpdate(
+          assetData.deviceId,
+          assetData.tagNumber,
+          assetData.organizationId,
+        );
+
+        if (existingAsset) {
+          await this.assetRepository.updateAsset(existingAsset, assetData);
+        } else {
+          await this.assetRepository.createAsset(assetData);
+        }
+      }
+      return { message: 'CSV file processed successfully.' };
+    } catch (error) {
+      // Handle the error here
+      console.error(`Error processing CSV file: ${error.message}`);
+      // Optionally, you can throw the error further or handle it as needed
+      return { message: `Failed to process CSV: ${error.message}` };
+    }
   }
 
   async getAssets(

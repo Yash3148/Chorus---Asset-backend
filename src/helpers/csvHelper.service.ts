@@ -9,6 +9,10 @@ export class CsvHelperService {
     const assets: Partial<Asset>[] = [];
 
     return new Promise((resolve, reject) => {
+      if (!fs.existsSync(filePath)) {
+        return reject(new Error(`File not found: ${filePath}`));
+      }
+
       fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (row) => {
