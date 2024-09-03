@@ -1,0 +1,35 @@
+version: '3.4'
+services:
+  db:
+    image: postgres:15
+    container_name: postgres15
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: chorus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chorus
+    ports:
+      - '8000:8000'
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_NAME: chorus
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+    driver: local
