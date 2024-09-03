@@ -74,13 +74,13 @@ export class AssetRepository {
         'asset.deviceId ILIKE :search OR ' +
           'asset.zoneId ILIKE :search OR ' +
           'asset.description ILIKE :search OR ' +
-          'asset.zoneCategory ILIKE :search OR ',
+          'asset.zoneCategory ILIKE :search ',
         { search: `%${search}%` },
       );
     }
 
     // Apply pagination
-    queryBuilder.skip(skip || 0).take(limit || 10);
+    // queryBuilder.skip(skip || 0).take(limit || 10); //uncommect after applying pagination in app
 
     return await queryBuilder.getMany();
   }
