@@ -26,7 +26,11 @@ export class AssetsService {
     const assets = await this.csvHelperService.processCsv(filePath);
     for (const assetData of assets) {
       console.log(assetData);
-      const existingAsset = await this.getAssetByDeviceId(assetData.deviceId);
+      const existingAsset = await this.assetRepository.findAssetToUpdate(
+        assetData.deviceId,
+        assetData.tagNumber,
+        assetData.organizationId,
+      );
       if (existingAsset) {
         await this.assetRepository.updateAsset(existingAsset, assetData);
       } else {

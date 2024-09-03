@@ -30,6 +30,12 @@ export class CsvHelperService {
 
     const floor = zoneId ? zoneId.match(/(?<=FL)\d{2}/)[0] : null;
 
+    // Function to randomly select a department
+    const getRandomDepartment = (): string => {
+      const departments = ['d1', 'd2', 'd3', 'd4', 'd5'];
+      return departments[Math.floor(Math.random() * departments.length)];
+    };
+
     return {
       eventId: row['Event ID'] || null,
       egressEventTime: row['Egress Event Time (MM-DD-YYYY)']
@@ -53,8 +59,8 @@ export class CsvHelperService {
       zoneId: zoneId,
       zoneCategory: row['Zone Category'] || null,
       floor: floor,
-      department: row['Department'],
-      organizationId: row['Organization Id'],
+      department: getRandomDepartment(),
+      organizationId: 'pa94',
     };
   }
 }

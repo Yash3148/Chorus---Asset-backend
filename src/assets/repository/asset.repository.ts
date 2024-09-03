@@ -16,7 +16,25 @@ export class AssetRepository {
   }
 
   async findAssetByDeviceId(deviceId: string): Promise<Asset> {
-    return await this.repository.findOne({ where: { deviceId } });
+    return await this.repository.findOne({
+      where: {
+        deviceId,
+      },
+    });
+  }
+
+  async findAssetToUpdate(
+    deviceId: string,
+    tagNumber: string,
+    organizationId: string,
+  ): Promise<Asset> {
+    return await this.repository.findOne({
+      where: {
+        deviceId,
+        tagNumber,
+        organizationId,
+      },
+    });
   }
 
   async updateAsset(asset: Asset, assetData: Partial<Asset>): Promise<Asset> {
@@ -53,12 +71,10 @@ export class AssetRepository {
 
     if (search) {
       queryBuilder.andWhere(
-        'asset.eventId ILIKE :search OR ' +
-          'asset.deviceId ILIKE :search OR ' +
-          'asset.tagNumber ILIKE :search OR ' +
+        'asset.deviceId ILIKE :search OR ' +
+          'asset.zoneId ILIKE :search OR ' +
           'asset.description ILIKE :search OR ' +
-          'asset.manufacturer ILIKE :search OR ' +
-          'asset.modelNumber ILIKE :search',
+          'asset.zoneCategory ILIKE :search OR ',
         { search: `%${search}%` },
       );
     }
