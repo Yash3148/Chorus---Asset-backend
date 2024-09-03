@@ -92,7 +92,7 @@ export class AuthService {
     const expiresIn = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
 
     // Store OTP in cache with a TTL of 10 minutes
-    await this.cacheManager.set(email, { otp, expiresIn }, 600);
+    await this.cacheManager.set(email, { otp, expiresIn }, 300000);
 
     this.logger.log(`OTP generated for email ${email}`);
     await this.mailerService.sendOtpEmail(email, otp);

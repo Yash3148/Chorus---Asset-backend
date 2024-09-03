@@ -51,7 +51,7 @@ export class Asset {
   zoneCategory: string; // Optional
 
   @Column({ nullable: true })
-  floor: string; // Optional
+  floor: number; // Optional
 
   @Column({ nullable: true })
   department: string; // Optional
