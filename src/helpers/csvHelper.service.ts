@@ -17,7 +17,6 @@ export class CsvHelperService {
         .pipe(csv())
         .on('data', (row) => {
           const assetData = this.mapRowToAsset(row);
-          console.log(assetData);
           assets.push(assetData);
         })
         .on('end', () => {
@@ -51,9 +50,12 @@ export class CsvHelperService {
       previousEgressLocation: row['Previous Egress Location'] || null,
       status: row['Status'] || null,
       returnedAt: row['Returned At'] ? new Date(row['Returned At']) : null,
-      unableToLocate: row['Unable to locate']
-        ? row['Unable to locate'].toLowerCase() === 'true'
-        : null,
+      unableToLocate:
+        row['Unable to locate'] === 'Y'
+          ? true
+          : row['Unable to locate'] === 'N'
+            ? false
+            : null,
       zoneId: zoneId,
       zoneCategory: row['Zone Category'] || null,
       floor: floor,

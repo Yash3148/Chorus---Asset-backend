@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AssetRepository } from './repository/asset.repository';
 import { CsvHelperService } from 'src/helpers/csvHelper.service';
 import { Asset } from './schemas/assets.entity';
@@ -6,9 +6,11 @@ import {
   GroupByFilterDto,
   SearchFilterAssetsDto,
 } from './dto/searchFilterAssets.dto';
+import * as fs from 'fs';
 
 @Injectable()
 export class AssetsService {
+  private readonly logger: Logger = new Logger(AssetsService.name);
   constructor(
     private readonly assetRepository: AssetRepository,
     private readonly csvHelperService: CsvHelperService, // Injecting CsvHelperService
@@ -26,9 +28,9 @@ export class AssetsService {
     try {
       const assets = await this.csvHelperService.processCsv(filePath);
 
+      let updatedRows = 0;
+      let newCreatedRows = 0;
       for (const assetData of assets) {
-        console.log(assetData);
-
         const existingAsset = await this.assetRepository.findAssetToUpdate(
           assetData.deviceId,
           assetData.tagNumber,
@@ -37,10 +39,25 @@ export class AssetsService {
 
         if (existingAsset) {
           await this.assetRepository.updateAsset(existingAsset, assetData);
+          updatedRows += 1;
         } else {
           await this.assetRepository.createAsset(assetData);
+          newCreatedRows += 1;
         }
       }
+      this.logger.log('CSV file processed successfully.');
+      this.logger.log(
+        `Rows updated: ${updatedRows}, Rows Created: ${newCreatedRows}`,
+      );
+
+      // Delete the file after processing
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          this.logger.error(`Error deleting file: ${filePath}`, err);
+        } else {
+          this.logger.log(`Successfully deleted file: ${filePath}`);
+        }
+      });
       return { message: 'CSV file processed successfully.' };
     } catch (error) {
       // Handle the error here
@@ -82,7 +99,6 @@ export class AssetsService {
     skip: number,
     limit: number,
   ): Promise<any> {
-    console.log(description);
     const totalCount =
       await this.assetRepository.getTotalCountGroupedByDescription(description);
     const assetsDetails = await this.assetRepository.getAssetsByDescription(
