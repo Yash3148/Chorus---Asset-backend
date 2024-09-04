@@ -94,7 +94,7 @@ export class AuthService {
     // Store OTP in cache with a TTL of 10 minutes
     await this.cacheManager.set(email, { otp, expiresIn }, 300000);
 
-    this.logger.log(`OTP generated for email ${email}`);
+    this.logger.log(`OTP:- ${otp} generated for email ${email}`);
     await this.mailerService.sendOtpEmail(email, otp);
 
     return { otp }; // For debugging, remove in production
