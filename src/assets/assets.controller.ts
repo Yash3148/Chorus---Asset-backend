@@ -8,6 +8,8 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import {
@@ -16,15 +18,50 @@ import {
 } from './dto/searchFilterAssets.dto';
 import { Asset } from './schemas/assets.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('assets')
 // @UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
+  // @Post('/upload-csv')
+  // async uploadCsv(@Body('filePath') filePath: string): Promise<void> {
+  //   return this.assetsService.processCsv(filePath);
+  // }
+
   @Post('/upload-csv')
-  async uploadCsv(@Body('filePath') filePath: string): Promise<void> {
-    return this.assetsService.processCsv(filePath);
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads', // Specify your desired upload directory
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(
+            null,
+            `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`,
+          );
+        },
+      }),
+    }),
+  )
+  async uploadCsv(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      const filePath = file.path; // Get the file path of the uploaded file
+      return await this.assetsService.processCsv(filePath); // Process the CSV file using the service
+    } catch (error) {
+      console.error('Error uploading CSV file:', error.message);
+      return {
+        success: false,
+        message: `Failed to upload CSV file: ${error.message}`,
+      };
+    }
   }
 
   @Post('/search')
