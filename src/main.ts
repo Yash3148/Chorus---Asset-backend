@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,7 @@ async function bootstrap() {
   // register all plugins and extension
   // app.setGlobalPrefix('api');
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({ origin: '*' });
   app.useGlobalPipes(
     new ValidationPipe({

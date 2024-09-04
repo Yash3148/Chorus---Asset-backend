@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import {
@@ -38,7 +39,7 @@ export class AssetsController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads', // Specify your desired upload directory
+        destination: './uploads',
         filename: (req, file, cb) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -48,6 +49,7 @@ export class AssetsController {
           );
         },
       }),
+      limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10 MB
     }),
   )
   @HttpCode(HttpStatus.CREATED)
@@ -55,15 +57,29 @@ export class AssetsController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const filePath = file.path; // Get the file path of the uploaded file
-      return await this.assetsService.processCsv(filePath); // Process the CSV file using the service
+      if (!file) {
+        // Handle cases where the file is undefined
+        throw new BadRequestException(
+          'File upload failed or no file uploaded.',
+        );
+      }
+
+      const filePath = file.path;
+      if (!filePath) {
+        throw new BadRequestException('File path is undefined.');
+      }
+
+      await this.assetsService.processCsv(filePath); // Process the CSV file using the service
+
+      return {
+        success: true,
+        message: 'CSV file uploaded and processed successfully.',
+      };
     } catch (error) {
       console.error('Error uploading CSV file:', error.message);
-      // return {
-      //   success: false,
-      //   message: `Failed to upload CSV file: ${error.message}`,
-      // };
-      throw new BadRequestException(`Failed to process CSV: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to process CSV: ${error.message}`,
+      );
     }
   }
 
