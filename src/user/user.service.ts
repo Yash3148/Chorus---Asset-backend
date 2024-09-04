@@ -36,11 +36,7 @@ export class UserService {
     return this.userRepository.updateUser(user);
   }
 
-  async changePassword(
-    email: string,
-    currentPassword: string,
-    newPassword: string,
-  ): Promise<void> {
+  async changePassword(email: string, newPassword: string): Promise<void> {
     // Find the user by email
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -48,10 +44,10 @@ export class UserService {
     }
 
     // Check if the current password is correct
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) {
-      throw new BadRequestException('Current password is incorrect');
-    }
+    // const isMatch = await bcrypt.compare(currentPassword, user.password);
+    // if (!isMatch) {
+    //   throw new BadRequestException('Current password is incorrect');
+    // }
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);

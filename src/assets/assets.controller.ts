@@ -129,11 +129,24 @@ export class AssetsController {
     return this.assetsService.getAssetsByFloor(floorNumber);
   }
 
-  @Get('/floor/:floorNumber/:deparment')
+  @Get('/floor/:floorNumber/:department')
   async getAssetsByDepartment(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
   ): Promise<any> {
     return this.assetsService.getAssetByDepartment(floorNumber, department);
+  }
+
+  @Get('/floor/:floorNumber/:department/:description')
+  async getAssetByDescriptionForDepartmentAndFloor(
+    @Param('floorNumber') floorNumber: string,
+    @Param('department') department: string,
+    @Param('description') description: string,
+  ): Promise<any> {
+    return this.assetsService.getAssetByDescriptionForDepartmentAndFloor(
+      floorNumber,
+      department,
+      description,
+    );
   }
 }

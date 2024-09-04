@@ -29,7 +29,6 @@ export class UserController {
   ) {
     await this.userService.changePassword(
       req.user.email,
-      changePasswordDto.currentPassword,
       changePasswordDto.newPassword,
     );
     return { message: 'Password changed successfully' };

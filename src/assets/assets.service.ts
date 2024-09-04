@@ -128,4 +128,16 @@ export class AssetsService {
       department,
     );
   }
+
+  async getAssetByDescriptionForDepartmentAndFloor(
+    floor,
+    department,
+    description,
+  ): Promise<any> {
+    return await this.assetRepository.getAssetByFloorDepartmentAndDescription(
+      floor,
+      department,
+      description,
+    );
+  }
 }

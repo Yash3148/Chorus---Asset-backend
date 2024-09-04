@@ -173,7 +173,7 @@ export class AssetRepository {
       });
 
     // Conditionally add the department filter
-    if (departmentName && floorNumber) {
+    if (departmentName) {
       query.andWhere('asset.department = :departmentName', { departmentName });
     }
 
@@ -225,5 +225,20 @@ export class AssetRepository {
       .groupBy('asset.department')
       .addGroupBy('asset.zoneId')
       .getRawMany();
+  }
+
+  async getAssetByFloorDepartmentAndDescription(
+    floor: string,
+    department: string,
+    description: string,
+  ): Promise<any> {
+    const [assets, totalCount] = await this.repository
+      .createQueryBuilder('asset')
+      .where('asset.floor = :floor', { floor })
+      .andWhere('asset.department = :department', { department })
+      .andWhere('asset.description = :description', { description })
+      .getManyAndCount();
+
+    return { assets, totalCount };
   }
 }
