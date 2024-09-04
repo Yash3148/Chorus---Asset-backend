@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import {
@@ -49,6 +50,7 @@ export class AssetsController {
       }),
     }),
   )
+  @HttpCode(HttpStatus.CREATED)
   async uploadCsv(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ success: boolean; message: string }> {
@@ -57,10 +59,11 @@ export class AssetsController {
       return await this.assetsService.processCsv(filePath); // Process the CSV file using the service
     } catch (error) {
       console.error('Error uploading CSV file:', error.message);
-      return {
-        success: false,
-        message: `Failed to upload CSV file: ${error.message}`,
-      };
+      // return {
+      //   success: false,
+      //   message: `Failed to upload CSV file: ${error.message}`,
+      // };
+      throw new BadRequestException(`Failed to process CSV: ${error.message}`);
     }
   }
 
