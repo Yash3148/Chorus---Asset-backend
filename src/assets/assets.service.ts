@@ -25,6 +25,7 @@ export class AssetsService {
   }
 
   async processCsv(filePath: string): Promise<any> {
+    const startTime = Date.now();
     try {
       const assets = await this.csvHelperService.processCsv(filePath);
 
@@ -58,6 +59,12 @@ export class AssetsService {
           this.logger.log(`Successfully deleted file: ${filePath}`);
         }
       });
+
+      // End time for processing in milliseconds
+      const endTime = Date.now();
+      const processingTime = (endTime - startTime).toFixed(3); // Calculate processing time in milliseconds
+
+      this.logger.log(`Total processing time: ${processingTime} ms`);
       return { message: 'CSV file processed successfully.' };
     } catch (error) {
       // Handle the error here

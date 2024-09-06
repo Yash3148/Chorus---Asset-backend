@@ -56,6 +56,7 @@ export class AssetsController {
   async uploadCsv(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ success: boolean; message: string }> {
+    const startTime = Date.now();
     try {
       if (!file) {
         // Handle cases where the file is undefined
@@ -70,6 +71,10 @@ export class AssetsController {
       }
 
       await this.assetsService.processCsv(filePath); // Process the CSV file using the service
+
+      const endTime = Date.now();
+      const timeTaken = (endTime - startTime).toFixed(3);
+      console.log('asset controler time: ', timeTaken);
 
       return {
         success: true,
