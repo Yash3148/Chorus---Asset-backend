@@ -30,11 +30,6 @@ import { Express } from 'express';
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
-  // @Post('/upload-csv')
-  // async uploadCsv(@Body('filePath') filePath: string): Promise<void> {
-  //   return this.assetsService.processCsv(filePath);
-  // }
-
   @Post('/upload-csv')
   @UseInterceptors(
     FileInterceptor('file', {

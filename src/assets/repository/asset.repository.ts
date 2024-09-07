@@ -128,28 +128,6 @@ export class AssetRepository {
     floorNumber?: string,
     departmentName?: string,
   ): Promise<any> {
-    // return this.repository
-    //   .createQueryBuilder('asset')
-    //   .select('asset.description', 'description')
-    //   .addSelect('COUNT(asset.id)', 'totalCount')
-    //   .addSelect(
-    //     '(COUNT(asset.id) - ' +
-    //       'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
-    //       'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))',
-    //     'monitoringCount',
-    //   )
-    //   .addSelect(
-    //     'ROUND(((COUNT(asset.id) - ' +
-    //       'SUM(CASE WHEN asset.egressEventTime IS NOT NULL AND asset.status = :egressStatus THEN 1 ELSE 0 END) - ' +
-    //       'SUM(CASE WHEN asset.status = :unableToLocateStatus THEN 1 ELSE 0 END))::NUMERIC / COUNT(asset.id)) * 100, 2)',
-    //     'monitoringPercentage',
-    //   )
-    //   .groupBy('asset.description')
-    //   .setParameters({
-    //     egressStatus: 'Egress',
-    //     unableToLocateStatus: 'Unable To Locate',
-    //   })
-    //   .getRawMany();
     const query = this.repository
       .createQueryBuilder('asset')
       .select('asset.description', 'description')
@@ -181,6 +159,8 @@ export class AssetRepository {
     if (floorNumber) {
       query.andWhere('asset.floor = :floorNumber', { floorNumber });
     }
+
+    query.orderBy('asset.description', 'ASC');
     // Execute and return the query results
     return await query.getRawMany();
   }
@@ -200,6 +180,7 @@ export class AssetRepository {
     return this.repository
       .createQueryBuilder('asset')
       .where('asset.description = :description', { description })
+      .orderBy('asset.unableToLocate', 'ASC')
       .skip(skip)
       .take(limit)
       .getMany();
