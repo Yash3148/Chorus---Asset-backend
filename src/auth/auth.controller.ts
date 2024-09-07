@@ -17,6 +17,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CreateUserDto } from 'src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -25,8 +26,26 @@ export class AuthController {
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() registerUser: RegisterUserDto) {
-    return this.authService.register(registerUser.email);
+  async register(@Body() RegisterUser: RegisterUserDto) {
+    return this.authService.register(RegisterUser);
+  }
+
+  @Post('initLogin')
+  async initLogin(
+    @Body('email') email: string,
+  ): Promise<{ hashedUser: string; isUserVerified: boolean }> {
+    return this.authService.initLogin(email);
+  }
+
+  @Post('initPassword')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @HttpCode(HttpStatus.OK)
+  async initPassword(
+    @Body('password') password: string,
+    @Req() req,
+  ): Promise<any> {
+    return this.authService.initPassword(req.user?.email, password);
   }
 
   @Post('login')
@@ -50,7 +69,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
     const token = await this.authService.verifyOtp(
-      verifyOtpDto.email,
+      verifyOtpDto.hashedUser,
       verifyOtpDto.otp,
     );
     return { message: 'OTP verified', token };
