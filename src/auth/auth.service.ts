@@ -72,7 +72,7 @@ export class AuthService {
   ): Promise<{ hashedUser: string; isUserVerified: boolean }> {
     const user = await this.userService.findUserByEmail(email);
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new BadRequestException('User not found.');
     }
 
     // If user is not verified, send OTP and cache OTP and hashed user details
