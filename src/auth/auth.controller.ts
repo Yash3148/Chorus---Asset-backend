@@ -36,7 +36,7 @@ export class AuthController {
     return this.authService.initLogin(email);
   }
 
-  @Post(' ')
+  @Post('initPassword')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   @HttpCode(HttpStatus.OK)
