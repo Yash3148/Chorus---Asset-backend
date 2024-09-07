@@ -17,7 +17,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { CreateUserDto } from 'src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -37,7 +36,7 @@ export class AuthController {
     return this.authService.initLogin(email);
   }
 
-  @Post('initPassword')
+  @Post(' ')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   @HttpCode(HttpStatus.OK)
