@@ -180,7 +180,7 @@ export class AssetRepository {
     return this.repository
       .createQueryBuilder('asset')
       .where('asset.description = :description', { description })
-      .orderBy('asset.unableToLocate', 'ASC')
+      .orderBy('asset.zoneCategory', 'ASC')
       .skip(skip)
       .take(limit)
       .getMany();
