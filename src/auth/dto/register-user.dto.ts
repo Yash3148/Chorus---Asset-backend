@@ -26,7 +26,7 @@ export class RegisterUserDto {
   lastName: string;
 
   @IsOptional()
-  @Length(1, 1, { message: 'Middle Initial must be a single character.' })
+  // @Length(1, 1, { message: 'Middle Initial must be a single character.' })
   @Matches(/^[a-zA-Z0-9!@#$%^&*()_+=-]?$/, {
     message:
       'Middle Initial must contain only alpha-numeric and special characters.',
