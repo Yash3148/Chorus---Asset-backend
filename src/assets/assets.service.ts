@@ -7,6 +7,7 @@ import {
   SearchFilterAssetsDto,
 } from './dto/searchFilterAssets.dto';
 import * as fs from 'fs';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AssetsService {
@@ -14,6 +15,7 @@ export class AssetsService {
   constructor(
     private readonly assetRepository: AssetRepository,
     private readonly csvHelperService: CsvHelperService, // Injecting CsvHelperService
+    private readonly userService: UserService,
   ) {}
 
   async createAsset(assetData: Partial<Asset>): Promise<Asset> {
@@ -76,6 +78,7 @@ export class AssetsService {
 
   async getAssets(
     assetsSeachFilterDto: SearchFilterAssetsDto,
+    userEmail: string,
   ): Promise<Asset[]> {
     const {
       filter = {},
@@ -90,6 +93,11 @@ export class AssetsService {
       skip,
       limit,
     );
+
+    console.log(userEmail, searchQuery);
+    if (searchQuery) {
+      await this.userService.saveSearch(userEmail, searchQuery);
+    }
     return assetsList;
   }
 

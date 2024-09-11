@@ -12,6 +12,7 @@ import {
   UploadedFile,
   BadRequestException,
   InternalServerErrorException,
+  Req,
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import {
@@ -26,7 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 
 @Controller('assets')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -87,8 +88,9 @@ export class AssetsController {
   @HttpCode(HttpStatus.OK)
   async getAssets(
     @Body() assetsSeachFilterDto: SearchFilterAssetsDto,
+    @Req() req,
   ): Promise<Asset[]> {
-    return this.assetsService.getAssets(assetsSeachFilterDto);
+    return this.assetsService.getAssets(assetsSeachFilterDto, req.user.email);
   }
 
   @Get('/:id')

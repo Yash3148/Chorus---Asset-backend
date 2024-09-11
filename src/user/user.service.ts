@@ -43,17 +43,38 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    // Check if the current password is correct
-    // const isMatch = await bcrypt.compare(currentPassword, user.password);
-    // if (!isMatch) {
-    //   throw new BadRequestException('Current password is incorrect');
-    // }
-
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update the user with the new password
     user.password = hashedPassword;
     await this.userRepository.updateUser(user);
+  }
+
+  async saveSearch(email: string, searchQuery: string): Promise<void> {
+    // Find the user's search record by email
+    let userSearch = await this.userRepository.findByEmailSearch(email);
+
+    const userData = { email, searchQueries: [searchQuery] };
+    if (!userSearch) {
+      // If no record exists, create a new one
+      userSearch = await this.userRepository.saveSearch(userData);
+    } else {
+      if (!userSearch.searchQueries.includes(searchQuery)) {
+        // If the search query is not already present, add it
+        userSearch.searchQueries.push(searchQuery);
+        await this.userRepository.saveSearch(userSearch);
+      }
+    }
+  }
+
+  async getPastSearches(email: string): Promise<string[]> {
+    const userSearch = await this.userRepository.getPastSearches(email);
+    if (!userSearch || !userSearch.searchQueries) {
+      return []; // Return an empty array if there are no search results
+    }
+
+    // Return only the last 5 results
+    return userSearch.searchQueries.slice(-5).reverse();
   }
 }
