@@ -80,7 +80,7 @@ export class AssetRepository {
         'asset.deviceId ILIKE :search OR ' +
           'asset.zoneId ILIKE :search OR ' +
           'asset.description ILIKE :search OR ' +
-          'asset.departmant ILIKE :search OR ' +
+          'asset.department ILIKE :search OR ' +
           'asset.zoneCategory ILIKE :search ',
         { search: `%${search}%` },
       );
