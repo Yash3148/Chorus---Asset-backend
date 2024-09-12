@@ -139,26 +139,33 @@ export class AssetsController {
     return this.assetsService.getAssetsByFloor(floorNumber);
   }
 
-  @Get('/floor/:floorNumber/:department')
+  @Get('/floor/:floorNumber/:department/:zone')
   @UseGuards(JwtAuthGuard)
   async getAssetsByDepartment(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
+    @Param('zone') zone: string,
   ): Promise<any> {
-    return this.assetsService.getAssetByDepartment(floorNumber, department);
+    return this.assetsService.getAssetByDepartment(
+      floorNumber,
+      department,
+      zone,
+    );
   }
 
-  @Get('/floor/:floorNumber/:department/:description')
+  @Get('/floor/:floorNumber/:department/:zone/:description')
   @UseGuards(JwtAuthGuard)
   async getAssetByDescriptionForDepartmentAndFloor(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
     @Param('description') description: string,
+    @Param('zone') zone: string,
   ): Promise<any> {
     return this.assetsService.getAssetByDescriptionForDepartmentAndFloor(
       floorNumber,
       department,
       description,
+      zone,
     );
   }
 }

@@ -146,7 +146,7 @@ export class AuthService {
     this.logger.log(`OTP:- ${otp} generated for email ${email}`);
     await this.mailerService.sendOtpEmail(email, otp);
 
-    return { message: 'otp sent successfully' }; // For debugging, remove in production
+    return { message: 'otp sent successfully', hashedUser }; // For debugging, remove in production
   }
 
   async verifyOtp(hashedUser: string, otp: string): Promise<any> {

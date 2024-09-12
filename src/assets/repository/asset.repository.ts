@@ -134,6 +134,7 @@ export class AssetRepository {
   async getMonitoringData(
     floorNumber?: string,
     departmentName?: string,
+    zone?: string,
   ): Promise<any> {
     const query = this.repository
       .createQueryBuilder('asset')
@@ -165,6 +166,10 @@ export class AssetRepository {
     // Conditionally add the floorNumber filter
     if (floorNumber) {
       query.andWhere('asset.floor = :floorNumber', { floorNumber });
+    }
+
+    if (zone) {
+      query.andWhere('asset.zoneId = :zone', { zone });
     }
 
     query.orderBy('asset.description', 'ASC');
@@ -219,12 +224,14 @@ export class AssetRepository {
     floor: string,
     department: string,
     description: string,
+    zone: string,
   ): Promise<any> {
     const [assets, totalCount] = await this.repository
       .createQueryBuilder('asset')
       .where('asset.floor = :floor', { floor })
       .andWhere('asset.department = :department', { department })
       .andWhere('asset.description = :description', { description })
+      .andWhere('asset.zoneId = :zone', { zone })
       .getManyAndCount();
 
     return { assets, totalCount };

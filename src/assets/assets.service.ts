@@ -212,10 +212,12 @@ export class AssetsService {
   async getAssetByDepartment(
     floorNumber: string,
     department: string,
+    zone: string,
   ): Promise<any> {
     return await this.assetRepository.getMonitoringData(
       floorNumber,
       department,
+      zone,
     );
   }
 
@@ -223,11 +225,13 @@ export class AssetsService {
     floor,
     department,
     description,
+    zone,
   ): Promise<any> {
     return await this.assetRepository.getAssetByFloorDepartmentAndDescription(
       floor,
       department,
       description,
+      zone,
     );
   }
 }
