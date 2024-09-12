@@ -27,7 +27,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 
 @Controller('assets')
-@UseGuards(JwtAuthGuard)
 export class AssetsController {
   constructor(private readonly assetsService: AssetsService) {}
 
@@ -66,7 +65,10 @@ export class AssetsController {
         throw new BadRequestException('File path is undefined.');
       }
 
-      await this.assetsService.processCsv(filePath); // Process the CSV file using the service
+      //use the below method if having some problem in processCsvWithStageComparision method
+      // await this.assetsService.processCsvWithComparision(filePath);
+
+      await this.assetsService.processCsvWithStageComparision(filePath);
 
       const endTime = Date.now();
       const timeTaken = (endTime - startTime).toFixed(3);
@@ -86,6 +88,7 @@ export class AssetsController {
 
   @Post('/search')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async getAssets(
     @Body() assetsSeachFilterDto: SearchFilterAssetsDto,
     @Req() req,
@@ -95,18 +98,21 @@ export class AssetsController {
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async getAssetByDeviceId(@Param('id') deviceId: string): Promise<Asset> {
     return this.assetsService.getAssetByDeviceId(deviceId);
   }
 
   @Post('/assetsList')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async getAssetsBy(@Body() groupBy: GroupByFilterDto): Promise<any> {
     return this.assetsService.getGroupBy(groupBy);
   }
 
   @Get('/description/all')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async getAssetsByDescription(
     @Query('description') description: string,
     @Query('skip') skip = 0,
@@ -120,11 +126,13 @@ export class AssetsController {
   }
 
   @Get('/floor/all')
+  @UseGuards(JwtAuthGuard)
   async getAllFoor() {
     return this.assetsService.getAllFloor();
   }
 
   @Get('/floor/:floorNumber')
+  @UseGuards(JwtAuthGuard)
   async getAssetsByFloor(
     @Param('floorNumber') floorNumber: string,
   ): Promise<any> {
@@ -132,6 +140,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber/:department')
+  @UseGuards(JwtAuthGuard)
   async getAssetsByDepartment(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
@@ -140,6 +149,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber/:department/:description')
+  @UseGuards(JwtAuthGuard)
   async getAssetByDescriptionForDepartmentAndFloor(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,

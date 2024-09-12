@@ -1,7 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('user_searches')
+@Entity('userSearches')
 export class UserSearch {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,8 +10,4 @@ export class UserSearch {
 
   @Column('text', { array: true, default: () => "'{}'" }) // Define the column as an array
   searchQueries: string[];
-
-  //   // Many-to-One relationship with User
-  //   @ManyToOne(() => User, (user) => user.searches)
-  //   user: User;  // Reference to User entity
 }
