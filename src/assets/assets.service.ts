@@ -170,7 +170,6 @@ export class AssetsService {
       limit,
     );
 
-    console.log(userEmail, searchQuery);
     if (searchQuery) {
       await this.userService.saveSearch(userEmail, searchQuery);
     }
