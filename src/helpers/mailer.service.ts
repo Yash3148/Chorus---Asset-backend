@@ -174,13 +174,26 @@ export class MailerService {
     this.emailUser = this.configService.get<string>('EMAIL_USER');
     // Initialize the Nodemailer transporter with SMTP configuration
     this.transporter = nodemailer.createTransport({
-      host: this.configService.get<string>('EMAIL_HOST'), // Replace with your SMTP server
-      port: this.configService.get<string>('EMAIL_PORT'),
-      secure: false, // Use true for 465, false for other ports
+      service: 'gmail',
+      port: 465,
+      secure: true, // true for 465, false for other ports
+      logger: false,
+      debug: false,
+      secureConnection: false,
       auth: {
-        user: this.emailUser, // Your email
-        pass: this.configService.get<string>('EMAIL_PASSWORD'), // Your email password
+        user: this.emailUser, // generated ethereal user
+        pass: this.configService.get<string>('EMAIL_PASSWORD'), // generated ethereal password
       },
+      tls: {
+        rejectUnAuthorized: true,
+      },
+      // host: this.configService.get<string>('EMAIL_HOST'), // Replace with your SMTP server
+      // port: this.configService.get<string>('EMAIL_PORT'),
+      // secure: true, // Use true for 465, false for other ports
+      // auth: {
+      //   user: this.emailUser, // Your email
+      //   pass: this.configService.get<string>('EMAIL_PASSWORD'), // Your email password
+      // },
     });
 
     if (!this.emailUser) {
