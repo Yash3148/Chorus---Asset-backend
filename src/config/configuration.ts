@@ -10,4 +10,10 @@ export default () => ({
   FRONTEND_URL: process.env.FRONTEND_URL,
   JWT_EXPIRY: process.env.JWT_EXPIRY,
   SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+  CLIENT_ID: process.env.CLIENT_ID,
+  CLIENT_SECRET: process.env.CLIENT_SECRET,
+  REFRESH_TOKEN: process.env.REFRESH_TOKEN,
+  EMAIL_HOST: process.env.EMAIL_HOST,
+  EMAIL_PORT: process.env.EMAIL_PORT,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
 });
