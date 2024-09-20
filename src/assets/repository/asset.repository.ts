@@ -202,6 +202,7 @@ export class AssetRepository {
     const distinctFloors = await this.repository
       .createQueryBuilder('asset')
       .select('DISTINCT(asset.floor)', 'floor')
+      .where('asset.floor IS NOT NULL')
       .orderBy('asset.floor', 'ASC')
       .getRawMany();
 

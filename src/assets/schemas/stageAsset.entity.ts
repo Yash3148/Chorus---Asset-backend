@@ -36,7 +36,7 @@ export class StageAsset {
   @Column({ nullable: true })
   previousEgressLocation: string; // Optional
 
-  @Column()
+  @Column({ nullable: true })
   status: string; // Required
 
   @Column({ type: 'timestamp', nullable: true })

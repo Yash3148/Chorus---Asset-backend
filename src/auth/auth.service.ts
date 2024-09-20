@@ -62,7 +62,7 @@ export class AuthService {
     await this.userService.registerUser(user);
 
     // Send the generated password to the user via email
-    // await this.mailerService.sendPasswordEmail(email, password);
+    this.mailerService.sendWelcomeEmail(email, user.firstName);
 
     return { message: 'User Registered successfully' };
   }

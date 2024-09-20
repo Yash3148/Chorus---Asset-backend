@@ -48,6 +48,16 @@ export class AssetsController {
         },
       }),
       limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10 MB
+      fileFilter: (req, file, cb) => {
+        // Validate file type
+        if (file.mimetype !== 'text/csv') {
+          return cb(
+            new BadRequestException('Only CSV files are allowed!'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
     }),
   )
   @HttpCode(HttpStatus.CREATED)

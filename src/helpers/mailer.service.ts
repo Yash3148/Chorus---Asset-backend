@@ -164,6 +164,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import * as path from 'path';
 
 @Injectable()
 export class MailerService {
@@ -175,11 +176,8 @@ export class MailerService {
     // Initialize the Nodemailer transporter with SMTP configuration
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
-      port: 465,
       secure: true, // true for 465, false for other ports
-      logger: false,
-      debug: false,
-      secureConnection: false,
+
       auth: {
         user: this.emailUser, // generated ethereal user
         pass: this.configService.get<string>('EMAIL_PASSWORD'), // generated ethereal password
@@ -187,13 +185,6 @@ export class MailerService {
       tls: {
         rejectUnAuthorized: true,
       },
-      // host: this.configService.get<string>('EMAIL_HOST'), // Replace with your SMTP server
-      // port: this.configService.get<string>('EMAIL_PORT'),
-      // secure: true, // Use true for 465, false for other ports
-      // auth: {
-      //   user: this.emailUser, // Your email
-      //   pass: this.configService.get<string>('EMAIL_PASSWORD'), // Your email password
-      // },
     });
 
     if (!this.emailUser) {
@@ -214,7 +205,62 @@ export class MailerService {
         subject: 'Chorus Password Reset OTP',
         text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`,
       });
-      this.logger.log(`Email sent to ${to}`);
+      this.logger.log(`OTP email sent to ${to}`);
+    } catch (error) {
+      this.logger.error(`Failed to send email: ${error.message}`);
+      throw new Error('Failed to send email');
+    }
+  }
+
+  async sendWelcomeEmail(to: string, firstName: string): Promise<void> {
+    try {
+      const capitalizedFirstName =
+        firstName.charAt(0).toUpperCase() + firstName.slice(1);
+      await this.transporter.sendMail({
+        from: this.emailUser, // Sender address
+        to, // List of receivers
+        subject: 'Welcome to Chorus Asset Management',
+        html: `
+          <p>Hi ${capitalizedFirstName},</p>
+          <p>Your account has been successfully created.</p>
+          <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code below:</p>
+          <p><strong>For iOS Users:</strong><br>
+            <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
+          <p><strong>For Android Users:</strong><br>
+            <img src="cid:androidQR" alt="Android QR Code" style="width:150px;height:150px;" /></p>
+          <p>Additionally, we've attached the Chorus Asset Management User Manual to help you familiarize yourself with the platform. It contains step-by-step instructions and helpful tips to get the most out of the app.</p>
+          <p>Best regards,<br>Chorus Team</p>
+        `,
+        attachments: [
+          {
+            filename: 'Chorus Asset Management User Manual.pdf',
+            path: path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'Chorus_Asset_Management_User_Manual.pdf',
+            ), // Corrected relative path
+          },
+          {
+            filename: 'IOS_QR.jpeg',
+            path: path.resolve(__dirname, '..', '..', 'documents', 'ios.jpeg'), // Corrected relative path
+            cid: 'iosQR', // Embedding iOS QR code using cid
+          },
+          {
+            filename: 'Android_QR.png',
+            path: path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'android.png',
+            ), // Corrected relative path
+            cid: 'androidQR', // Embedding Android QR code using cid
+          },
+        ],
+      });
+      this.logger.log(`Welcome email sent to ${to}`);
     } catch (error) {
       this.logger.error(`Failed to send email: ${error.message}`);
       throw new Error('Failed to send email');
