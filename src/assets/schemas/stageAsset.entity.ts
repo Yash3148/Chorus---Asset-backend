@@ -52,7 +52,7 @@ export class StageAsset {
   zoneCategory: string; // Optional
 
   @Column({ nullable: true })
-  floor: number; // Optional
+  floor: string; // Optional
 
   @Column({ nullable: true })
   department: string; // Optional

@@ -17,7 +17,9 @@ export class CsvHelperService {
         .pipe(csv())
         .on('data', (row) => {
           const assetData = this.mapRowToAsset(row);
-          assets.push(assetData);
+          if (assetData) {
+            assets.push(assetData);
+          }
         })
         .on('end', () => {
           resolve(assets);
@@ -28,9 +30,9 @@ export class CsvHelperService {
     });
   }
 
-  private mapRowToAsset(row: any): Partial<Asset> {
-    const extractField = (fieldName: string) => {
-      const regex = new RegExp(`${fieldName}`, 'i'); // case-insensitive search
+  private mapRowToAsset(row: any): Partial<Asset> | null {
+    const extractField = (fieldNames: string[]) => {
+      const regex = new RegExp(fieldNames.join('|'), 'i'); // case-insensitive search for multiple field names
       const matchedKey = Object.keys(row).find((key) => regex.test(key));
       return matchedKey ? row[matchedKey] : null;
     };
@@ -40,38 +42,52 @@ export class CsvHelperService {
       return !isNaN(parsedDate) ? new Date(parsedDate) : null; // Return valid Date object or null
     };
 
-    const zoneId = extractField('Last Location');
-    const floorMatch = zoneId.match(/(?<=FL)\d{2}/); // Match the floor pattern
-    const floor = floorMatch ? parseInt(floorMatch[0], 10) : null;
-    // let floor = null;
-    // if (zoneId) {
-    //   console.log(zoneId);
-    //   floor = zoneId ? parseInt(zoneId.match(/(?<=FL)\d{2}/)[0], 10) : null;
-    // }
+    const description = extractField(['Description']);
+    const lastLocation = extractField(['Last Location']);
+
+    if (!description || !lastLocation) {
+      return null;
+    }
+
+    const zoneId = lastLocation;
+
+    const isNotInZone = zoneId?.toLowerCase() === 'notinzone';
+
+    const floorMatch =
+      zoneId && !isNotInZone ? zoneId.match(/(?<=FL)\d{2}/) : null;
+    const floor = isNotInZone ? 'NotInZone' : floorMatch ? floorMatch[0] : null;
+
+    let zoneCategory = extractField(['Zone Category']);
+    if (!zoneCategory && lastLocation && lastLocation !== 'NotInZone') {
+      const zoneCategoryMatch = lastLocation.match(/FL\d{2}(P|NP)\d*/i);
+      if (zoneCategoryMatch) {
+        zoneCategory = zoneCategoryMatch[1].toUpperCase();
+      }
+    }
 
     return {
-      eventId: extractField('Event ID'),
-      egressEventTime: parseDate(extractField('Egress Event')),
-      deviceId: extractField('Device ID'),
-      tagNumber: extractField('Tag Number'),
-      description: extractField('Description'),
-      manufacturer: extractField('Manufacturer'),
-      modelNumber: extractField('Model Number'),
-      lastSeenTime: parseDate(extractField('Last Seen Time')),
-      lastLocation: extractField('Last Location'),
-      previousEgressLocation: extractField('Previous Egress Location'),
-      status: extractField('Status'),
-      returnedAt: parseDate(extractField('Returned At')),
+      eventId: extractField(['Event ID']),
+      egressEventTime: parseDate(extractField(['Egress Event'])),
+      deviceId: extractField(['Device ID']),
+      tagNumber: extractField(['Tag Number']),
+      description: description,
+      manufacturer: extractField(['Manufacturer']),
+      modelNumber: extractField(['Model Number']),
+      lastSeenTime: parseDate(extractField(['Last Seen Time'])),
+      lastLocation: lastLocation,
+      previousEgressLocation: extractField(['Previous Egress Location']),
+      status: extractField(['Status']),
+      returnedAt: parseDate(extractField(['Returned At'])),
       unableToLocate:
-        extractField('Unable to locate') === 'Y'
+        extractField(['Unable to locate']) === 'Y'
           ? true
-          : extractField('Unable to locate') === 'N'
+          : extractField(['Unable to locate']) === 'N'
             ? false
             : null,
       zoneId: zoneId,
-      zoneCategory: extractField('Zone Category'),
+      zoneCategory: zoneCategory,
       floor: floor,
-      department: extractField('Department'),
+      department: extractField(['Department', 'Departement']), // Handling both 'Department' and 'Departement'
       organizationId: 'pa94',
     };
   }
