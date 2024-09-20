@@ -87,7 +87,7 @@ export class CsvHelperService {
       zoneId: zoneId,
       zoneCategory: zoneCategory,
       floor: floor,
-      department: extractField(['Department', 'Departement']), // Handling both 'Department' and 'Departement'
+      department: extractField(['Department', 'Departement']) || 'Unknown', // Handling both 'Department' and 'Departement'
       organizationId: 'pa94',
     };
   }
