@@ -189,13 +189,19 @@ export class AssetRepository {
     skip: number,
     limit: number,
   ): Promise<Asset[]> {
-    return this.repository
-      .createQueryBuilder('asset')
-      .where('asset.description = :description', { description })
-      .orderBy('asset.zoneCategory', 'ASC')
-      .skip(skip)
-      .take(limit)
-      .getMany();
+    return (
+      this.repository
+        .createQueryBuilder('asset')
+        .where('asset.description = :description', { description })
+        // .orderBy('asset.zoneCategory', 'ASC')
+        .orderBy(
+          "CASE WHEN asset.zoneCategory IN ('Non-Productive (NP)', 'Non-Productive', 'NP') THEN 1 WHEN asset.zoneCategory IN ('Productive (P)', 'Productive', 'P') THEN 2 WHEN asset.zoneCategory IS NULL THEN 3 END",
+          'ASC',
+        )
+        .skip(skip)
+        .take(limit)
+        .getMany()
+    );
   }
 
   async getAllFloor() {

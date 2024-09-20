@@ -222,14 +222,14 @@ export class MailerService {
         subject: 'Welcome to Chorus Asset Management',
         html: `
           <p>Hi ${capitalizedFirstName},</p>
-          <p>Your account has been successfully created.</p>
+          <p>Thank you for registering with Asset management. Your account has been successfully created.</p>
           <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code below:</p>
-          <p><strong>For iOS Users:</strong><br>
+          <p><strong>For iOS Users:</strong><br><br>
             <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
           <p><strong>For Android Users:</strong><br>
             <img src="cid:androidQR" alt="Android QR Code" style="width:150px;height:150px;" /></p>
           <p>Additionally, we've attached the Chorus Asset Management User Manual to help you familiarize yourself with the platform. It contains step-by-step instructions and helpful tips to get the most out of the app.</p>
-          <p>Best regards,<br>Chorus Team</p>
+          <p>Best Regards,<br>Chorus Team</p>
         `,
         attachments: [
           {
