@@ -81,6 +81,7 @@ export class AssetRepository {
           'asset.zoneId ILIKE :search OR ' +
           'asset.description ILIKE :search OR ' +
           'asset.department ILIKE :search OR ' +
+          'asset.tagNumber ILIKE :search OR ' +
           'asset.zoneCategory ILIKE :search ',
         { search: `%${search}%` },
       );

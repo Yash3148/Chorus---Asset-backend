@@ -37,9 +37,17 @@ export class CsvHelperService {
       return matchedKey ? row[matchedKey] : null;
     };
 
-    const parseDate = (dateString: string | null) => {
+    const parseDate = (
+      dateString: string | null,
+      hoursToSubtract: number = 0,
+    ) => {
       const parsedDate = Date.parse(dateString); // Parse the date string
-      return !isNaN(parsedDate) ? new Date(parsedDate) : null; // Return valid Date object or null
+      if (!isNaN(parsedDate)) {
+        const date = new Date(parsedDate);
+        date.setHours(date.getHours() - hoursToSubtract);
+        return date;
+      }
+      return null; // Return null if date is invalid
     };
 
     const description = extractField(['Description']);
@@ -61,7 +69,7 @@ export class CsvHelperService {
     if (!zoneCategory && lastLocation && lastLocation !== 'NotInZone') {
       const zoneCategoryMatch = lastLocation.match(/FL\d{2}(P|NP)\d*/i);
       if (zoneCategoryMatch) {
-        zoneCategory = zoneCategoryMatch[1].toUpperCase();
+        zoneCategory = zoneCategoryMatch[0].toUpperCase();
       }
     }
 
@@ -73,7 +81,7 @@ export class CsvHelperService {
       description: description,
       manufacturer: extractField(['Manufacturer']),
       modelNumber: extractField(['Model Number']),
-      lastSeenTime: parseDate(extractField(['Last Seen Time'])),
+      lastSeenTime: parseDate(extractField(['Last Seen Time']), 5), // Now subtracting 5 hours
       lastLocation: lastLocation,
       previousEgressLocation: extractField(['Previous Egress Location']),
       status: extractField(['Status']),
@@ -91,40 +99,4 @@ export class CsvHelperService {
       organizationId: 'pa94',
     };
   }
-
-  // private mapRowToAsset(row: any): Partial<Asset> {
-  //   const zoneId = row['Zone ID'] || null;
-
-  //   const floor = zoneId ? parseInt(zoneId.match(/(?<=FL)\d{2}/)[0], 10) : null;
-
-  //   return {
-  //     eventId: row['Event ID'] || null,
-  //     egressEventTime: row['Egress Event Time (MM-DD-YYYY)']
-  //       ? new Date(row['Egress Event Time (MM-DD-YYYY)'])
-  //       : null,
-  //     deviceId: row['Device ID'] || null,
-  //     tagNumber: row['Tag Number'] || null,
-  //     description: row['Description'] || null,
-  //     manufacturer: row['Manufacturer'] || null,
-  //     modelNumber: row['Model Number'] || null,
-  //     lastSeenTime: row['Last Seen Time']
-  //       ? new Date(row['Last Seen Time'])
-  //       : null,
-  //     lastLocation: row['Last Location'] || null,
-  //     previousEgressLocation: row['Previous Egress Location'] || null,
-  //     status: row['Status'] || null,
-  //     returnedAt: row['Returned At'] ? new Date(row['Returned At']) : null,
-  //     unableToLocate:
-  //       row['Unable to locate'] === 'Y'
-  //         ? true
-  //         : row['Unable to locate'] === 'N'
-  //           ? false
-  //           : null,
-  //     zoneId: zoneId,
-  //     zoneCategory: row['Zone Category'] || null,
-  //     floor: floor,
-  //     department: row['Department'] || null,
-  //     organizationId: 'pa94',
-  //   };
-  // }
 }

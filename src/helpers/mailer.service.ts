@@ -224,9 +224,11 @@ export class MailerService {
           <p>Hi ${capitalizedFirstName},</p>
           <p>Thank you for registering with Asset management. Your account has been successfully created.</p>
           <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code below:</p>
-          <p><strong>For iOS Users:</strong><br><br>
+          <p><strong>For iOS Users:</strong><br>
+            <a href="https://testflight.apple.com/join/QhDVnyWR" style="display:inline-block; margin-bottom:10px;">iOS Install</a><br>
             <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
           <p><strong>For Android Users:</strong><br>
+            <a href="http://34.171.78.199/apks/chorus.apk" style="display:inline-block; margin-bottom:10px;">Android Install</a><br>
             <img src="cid:androidQR" alt="Android QR Code" style="width:150px;height:150px;" /></p>
           <p>Additionally, we've attached the Chorus Asset Management User Manual to help you familiarize yourself with the platform. It contains step-by-step instructions and helpful tips to get the most out of the app.</p>
           <p>Best Regards,<br>Chorus Team</p>
@@ -266,7 +268,6 @@ export class MailerService {
       throw new Error('Failed to send email');
     }
   }
-
   generateOtp(): string {
     // Generate a 4-digit OTP
     const otp = Math.floor(1000 + Math.random() * 9000).toString();
