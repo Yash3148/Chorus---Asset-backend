@@ -223,7 +223,7 @@ export class MailerService {
         html: `
           <p>Hi ${capitalizedFirstName},</p>
           <p>Thank you for registering with Asset management. Your account has been successfully created.</p>
-          <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code below:</p>
+          <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code or clicking the link below:</p>
           <p><strong>For iOS Users:</strong><br>
             <a href="https://testflight.apple.com/join/QhDVnyWR" style="display:inline-block; margin-bottom:10px;">iOS Install</a><br>
             <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
