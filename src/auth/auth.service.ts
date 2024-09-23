@@ -19,7 +19,6 @@ import { RegisterUserDto } from './dto/register-user.dto';
 @Injectable()
 export class AuthService {
   private readonly logger: Logger = new Logger(AuthService.name);
-  // private otps: Map<string, { otp: string; expiresIn: number }> = new Map();
 
   constructor(
     private userService: UserService,
@@ -38,10 +37,12 @@ export class AuthService {
       phoneNumber,
     } = registerUserDto;
 
-    const existingUser = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const existingUser =
+      await this.userService.findUserByEmail(lowercasedEmail);
     if (existingUser) {
       this.logger.warn(
-        `Registration failed: User already exists with email ${email}`,
+        `Registration failed: User already exists with email ${lowercasedEmail}`,
       );
       throw new BadRequestException('User already exists');
     }
@@ -49,20 +50,20 @@ export class AuthService {
     const password = crypto.randomBytes(4).toString('hex'); // Generate a random 8-character password
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User();
-    user.email = email;
+    user.email = lowercasedEmail; // Store the email in lowercase
     user.firstName = firstName;
     user.lastName = lastName;
     user.middleInitial = middleInitial;
     user.hospitalId = hospitalId;
     user.phoneNumber = phoneNumber;
-    user.password = hashedPassword; // Set password to null
-    user.isUserVerified = false; // Set lastLogin to null
+    user.password = hashedPassword;
+    user.isUserVerified = false;
 
-    this.logger.log(`Registering user with email ${email}`);
+    this.logger.log(`Registering user with email ${lowercasedEmail}`);
     await this.userService.registerUser(user);
 
     // Send the generated password to the user via email
-    this.mailerService.sendWelcomeEmail(email, user.firstName);
+    this.mailerService.sendWelcomeEmail(lowercasedEmail, user.firstName);
 
     return { message: 'User Registered successfully' };
   }
@@ -70,7 +71,8 @@ export class AuthService {
   async initLogin(
     email: string,
   ): Promise<{ hashedUser: string; isUserVerified: boolean }> {
-    const user = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const user = await this.userService.findUserByEmail(lowercasedEmail);
     if (!user) {
       throw new BadRequestException('User not found.');
     }
@@ -78,23 +80,25 @@ export class AuthService {
     // If user is not verified, send OTP and cache OTP and hashed user details
     if (!user.isUserVerified) {
       const otp = this.mailerService.generateOtp();
-      // const expiresIn = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
-
       const hashedUser = crypto
         .createHash('sha256')
-        .update(email)
+        .update(lowercasedEmail)
         .digest('hex'); // Create hash for the user
 
       // Store OTP and hashed user in cache manager
-      await this.cacheManager.set(hashedUser, { otp, email }, 300000); // TTL 5 minutes
-      this.logger.log(`OTP:- ${otp} generated for email ${email}`);
-      await this.mailerService.sendOtpEmail(email, otp);
+      await this.cacheManager.set(
+        hashedUser,
+        { otp, email: lowercasedEmail },
+        300000,
+      ); // TTL 5 minutes
+      this.logger.log(`OTP:- ${otp} generated for email ${lowercasedEmail}`);
+      await this.mailerService.sendOtpEmail(lowercasedEmail, otp);
       return { hashedUser, isUserVerified: false };
     } else {
       // User already verified, return hashed user with isUserVerified true
       const hashedUser = crypto
         .createHash('sha256')
-        .update(email)
+        .update(lowercasedEmail)
         .digest('hex');
       return { hashedUser, isUserVerified: true };
     }
@@ -106,9 +110,12 @@ export class AuthService {
       throw new BadRequestException('Email and password are required');
     }
 
-    const user = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const user = await this.userService.findUserByEmail(lowercasedEmail);
     if (!user || !(await bcrypt.compare(userPassword, user.password))) {
-      this.logger.warn(`Login failed: Invalid credentials for email ${email}`);
+      this.logger.warn(
+        `Login failed: Invalid credentials for email ${lowercasedEmail}`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -118,7 +125,7 @@ export class AuthService {
     });
 
     const { id, password, ...sanitizedUser } = user;
-    this.logger.log(`User logged in with email ${email}`);
+    this.logger.log(`User logged in with email ${lowercasedEmail}`);
     return { user: sanitizedUser, accessToken };
   }
 
@@ -128,23 +135,29 @@ export class AuthService {
       throw new BadRequestException('Email is required');
     }
 
-    const user = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const user = await this.userService.findUserByEmail(lowercasedEmail);
     if (!user) {
       this.logger.warn(
-        `Forget Password failed: User not found with email ${email}`,
+        `Forget Password failed: User not found with email ${lowercasedEmail}`,
       );
       throw new NotFoundException('User not found');
     }
 
     const otp = this.mailerService.generateOtp();
-    // const expiresIn = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
-
-    const hashedUser = crypto.createHash('sha256').update(email).digest('hex');
+    const hashedUser = crypto
+      .createHash('sha256')
+      .update(lowercasedEmail)
+      .digest('hex');
     // Store OTP in cache with a TTL of 10 minutes
-    await this.cacheManager.set(hashedUser, { otp, email }, 300000);
+    await this.cacheManager.set(
+      hashedUser,
+      { otp, email: lowercasedEmail },
+      300000,
+    );
 
-    this.logger.log(`OTP:- ${otp} generated for email ${email}`);
-    await this.mailerService.sendOtpEmail(email, otp);
+    this.logger.log(`OTP:- ${otp} generated for email ${lowercasedEmail}`);
+    await this.mailerService.sendOtpEmail(lowercasedEmail, otp);
 
     return { message: 'otp sent successfully', hashedUser }; // For debugging, remove in production
   }
@@ -161,16 +174,10 @@ export class AuthService {
     }>(hashedUser);
     if (!cachedData || cachedData.otp !== otp) {
       this.logger.warn(
-        `Verify OTP failed: Invalid or expired OTP for email ${cachedData.email}`,
+        `Verify OTP failed: Invalid or expired OTP for email ${cachedData?.email}`,
       );
       throw new BadRequestException('Invalid or expired OTP');
     }
-
-    // if (record.expiresIn < Date.now()) {
-    //   await this.cacheManager.del(email);
-    //   this.logger.warn(`Verify OTP failed: OTP has expired for email ${email}`);
-    //   throw new BadRequestException('OTP has expired');
-    // }
 
     // OTP is valid, remove it to prevent reuse
     await this.cacheManager.del(hashedUser);
@@ -194,10 +201,11 @@ export class AuthService {
       throw new BadRequestException('Email and new password are required');
     }
 
-    const user = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const user = await this.userService.findUserByEmail(lowercasedEmail);
     if (!user) {
       this.logger.warn(
-        `Reset Password failed: User not found with email ${email}`,
+        `Reset Password failed: User not found with email ${lowercasedEmail}`,
       );
       throw new NotFoundException('User not found');
     }
@@ -205,7 +213,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
 
-    this.logger.log(`Password reset for user with email ${email}`);
+    this.logger.log(`Password reset for user with email ${lowercasedEmail}`);
     return { message: 'Password reset successfully' };
   }
 
@@ -217,10 +225,11 @@ export class AuthService {
       throw new BadRequestException('Email and new password are required');
     }
 
-    const user = await this.userService.findUserByEmail(email);
+    const lowercasedEmail = email.toLowerCase(); // Lowercasing email
+    const user = await this.userService.findUserByEmail(lowercasedEmail);
     if (!user) {
       this.logger.warn(
-        `Reset Password failed: User not found with email ${email}`,
+        `Reset Password failed: User not found with email ${lowercasedEmail}`,
       );
       throw new NotFoundException('User not found');
     }
@@ -228,7 +237,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
 
-    this.logger.log(`Password reset for user with email ${email}`);
+    this.logger.log(`Password reset for user with email ${lowercasedEmail}`);
     await this.userService.updateUser(user);
     const { id, password, ...sanitizedUser } = user;
     const accessToken = this.jwtService.sign({
