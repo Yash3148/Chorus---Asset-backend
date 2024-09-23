@@ -46,7 +46,8 @@ export class User {
   middleInitial?: string;
 
   @Column()
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsOptional()
   @Matches(/^[a-zA-Z0-9]*$/, {
     message: 'Hospital ID must contain only alpha-numeric characters.',
   })

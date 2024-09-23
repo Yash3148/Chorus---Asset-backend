@@ -33,7 +33,7 @@ export class RegisterUserDto {
   })
   middleInitial?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @Matches(/^[a-zA-Z0-9]*$/, {
     message: 'Hospital ID must contain only alpha-numeric characters.',
   })
